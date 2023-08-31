@@ -2,12 +2,12 @@ package filmes;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
-
 public class RecomendacaoFilmes {
-	
-	public static void main(String[] args) {
+
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Bem-vindo! Qual é o seu nome?");
@@ -17,25 +17,33 @@ public class RecomendacaoFilmes {
         System.out.println("Digite 1 para ação, 2 para romance ou 3 para comédia:");
 
         int escolha = scanner.nextInt();
-        String filmeRecomendado = "";
+        String genero = "";
 
         switch (escolha) {
             case 1:
-                filmeRecomendado = "Velozes e Furiosos";
+                genero = "Ação";
                 break;
             case 2:
-                filmeRecomendado = "O date perfeito";
+                genero = "Romance";
                 break;
             case 3:
-                filmeRecomendado = "Esposa de Mentirinha";
+                genero = "Comédia";
                 break;
             default:
                 System.out.println("Opção inválida.");
         }
 
-        if (!filmeRecomendado.isEmpty()) { // Aqui indica se está vazia ou não, no caso botei o "!" para indicar ao contrário. 
-            System.out.println("Recomendação para você: " + filmeRecomendado);
-            salvarRecomendacaoEmCSV(nome, filmeRecomendado);
+        if (!genero.isEmpty()) {
+            DatabaseManager dbManager = new DatabaseManager();
+            List<String> filmesDoGenero = dbManager.getMoviesByGenre(genero);
+            
+            if (!filmesDoGenero.isEmpty()) {
+                System.out.println("Filmes do gênero " + genero + ":");
+                filmesDoGenero.forEach(System.out::println);
+                salvarRecomendacaoEmCSV(nome, filmesDoGenero.get(0)); // Salvando o primeiro filme da lista como recomendação
+            } else {
+                System.out.println("Não foram encontrados filmes do gênero " + genero + ".");
+            }
         }
 
         scanner.close();
@@ -50,5 +58,4 @@ public class RecomendacaoFilmes {
             e.printStackTrace();
         }
     }
-
 }
